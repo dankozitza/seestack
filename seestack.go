@@ -1,29 +1,31 @@
 package seestack
 
 import (
-	"fmt"
 	"runtime/debug"
 	"strings"
+	"regexp"
 )
 
+// Full
+//
+// gives the full call stack
+//
 func Full() string {
 	return string(debug.Stack())
 }
 
-func Short() string {
+// ShortExclude
+//
+// gives a short version of the call stack excluding the top n calls.
+// ShortExclude(0) will give all calls excluding this package
+//
+func ShortExclude(exclude int) string {
+
 	lines := strings.Split(string(debug.Stack()), "\n")
-	fmt.Println("lines len:", len(lines))
 
 	num_words := len(lines) - 1
 	num_words = num_words / 2
 	num_words -= 3
-
-	for i, l := range(lines) {
-		fmt.Println(i, l)
-	}
-
-	fmt.Println("lines excluding some")
-	fmt.Println("num_words:", num_words)
 
 	var ret string
 
@@ -33,13 +35,37 @@ func Short() string {
 		if (i == 0 || i%2 != 0) {
 			continue
 		}
-		// remove extra stuff in line to get only the package name
-		// maybe include the line number? that is pretty nice
-		fmt.Println(i, l)
-		if (cnt == num_words) {
+		// skip excluded calls
+		if (cnt <= exclude) {
+			cnt++
+			continue
+		}
+		// make sure we don't get the lower level calls
+		if (cnt > num_words) {
 			break
 		}
 		cnt++
+
+		// remove extra stuff in line to get only the package name
+		// maybe include the line number? that is pretty nice
+		r, _ := regexp.Compile(".*/")
+		l = r.ReplaceAllString(l, "")
+		r, _ = regexp.Compile("\\.go.*$")
+		l = r.ReplaceAllString(l, "")
+
+		if (ret == "") {
+			ret = l
+		} else {
+			ret = l + "::" + ret
+		}
 	}
-	return "test"
+	return ret
+}
+
+// Short
+//
+// gives a short version of the call stack
+//
+func Short() string {
+	return ShortExclude(1)
 }
