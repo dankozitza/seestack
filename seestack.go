@@ -63,13 +63,13 @@ func ShortExclude(exclude int) string {
 		// when called from a function there will be a package name for the
 		// the function and the package
 
-		// this is the option to show the functions along with the packages
-		// if show_funcs == 0 then skip packages calling their own functions
-		// may make this into a global config option. Or could also make it
-		// a paramter. make generic function for modifying stack will multiple
-		// options. 
-		// have ShortExclude() call ShortStack(exclude int, showfuncs bool)
-		show_funcs := false
+		// this is the option to show the functions along with the packages.
+		// if show_funcs == 0 then skip packages calling their own functions.
+		// may make this into a global config option(do this but keep it out of
+		// this package). Or could also make it paramter. make generic function
+		// for modifying stack will multiple options. have ShortExclude() call 
+		// ShortStack(exclude int, showfuncs bool)
+		show_funcs := true
 		if (show_funcs) {
 			// get the function name from the line below
 			r, _ = regexp.Compile("^\\W*")
@@ -77,7 +77,7 @@ func ShortExclude(exclude int) string {
 			r, _ = regexp.Compile(":.*")
 			func_name = r.ReplaceAllString(func_name, "")
 
-			l = l + "." + func_name
+			l += "." + func_name
 		} else {
 
 			// if the package is the same as last time then we were called from a
