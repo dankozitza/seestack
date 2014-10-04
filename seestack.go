@@ -63,7 +63,7 @@ func ShortExclude(exclude int) string {
 		// when called from a function there will be a package name for the
 		// the function and the package
 
-		// this is the option to show the functions along with the packages.
+		// TODO: this is the option to show the functions along with the packages.
 		// if show_funcs == 0 then skip packages calling their own functions.
 		// may make this into a global config option(do this but keep it out of
 		// this package). Or could also make it paramter. make generic function
