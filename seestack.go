@@ -31,7 +31,9 @@ func ShortExclude(exclude int) string {
 
 	num_words := len(lines) - 1
 	num_words = num_words / 2
-	num_words -= 3
+	num_words -= 2
+
+	//fmt.Println("num_words", num_words)
 
 	var ret string
 	var current_pkg string
@@ -42,22 +44,22 @@ func ShortExclude(exclude int) string {
 		if (i == 0 || i%2 != 0) {
 			continue
 		}
+		// exclude lines that don't contain a go file name
+		m, _ := regexp.Match("\\.go", []byte(l))
+		if (!m) {
+			continue
+		}
 		// skip exclude number of calls
 		if (cnt <= exclude) {
 			cnt++
 			continue
 		}
-		// make sure we don't get the lower level calls
-		if (cnt > num_words) {
-			break
-		}
-		cnt++
 
 		// remove extra stuff in line to get only the package name
-		// maybe include the line number? that is pretty nice
+		// TODO: have options for line number/
 		r, _ := regexp.Compile(".*/")
 		l = r.ReplaceAllString(l, "")
-		r, _ = regexp.Compile("\\.go.*$")
+		r, _ = regexp.Compile("\\s+\\(.*$")
 		l = r.ReplaceAllString(l, "")
 
 		// when called from a function there will be a package name for the
@@ -69,7 +71,7 @@ func ShortExclude(exclude int) string {
 		// this package). Or could also make it paramter. make generic function
 		// for modifying stack will multiple options. have ShortExclude() call 
 		// ShortStack(exclude int, showfuncs bool)
-		show_funcs := true
+		show_funcs := false
 		if (show_funcs) {
 			// get the function name from the line below
 			r, _ = regexp.Compile("^\\W*")
@@ -90,11 +92,7 @@ func ShortExclude(exclude int) string {
 		}
 
 		if (ret == "") {
-			//if (func_stack == "")
-				ret = l
-			//} else {
-			//	ret = l + func_stack
-			//}
+			ret = l
 		} else {
 			ret = l + "::" + ret
 		}
