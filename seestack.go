@@ -2,9 +2,9 @@ package seestack
 
 import (
 	//"fmt"
+	"regexp"
 	"runtime/debug"
 	"strings"
-	"regexp"
 )
 
 // Full
@@ -29,29 +29,18 @@ func ShortExclude(exclude int) string {
 	//	fmt.Println(i, l)
 	//}
 
-	num_words := len(lines) - 1
-	num_words = num_words / 2
-	num_words -= 2
-
-	//fmt.Println("num_words", num_words)
-
 	var ret string
 	var current_pkg string
 	//var func_stack string
 	cnt := 1
-	for i, l := range(lines) {
+	for i, l := range lines {
 		// exclude line 0 and odd lines
-		if (i == 0 || i%2 != 0) {
+		if i == 0 || i%2 != 0 {
 			continue
 		}
 		// exclude lines that don't contain a go file name
 		m, _ := regexp.Match("\\.go", []byte(l))
-		if (!m) {
-			continue
-		}
-		// skip exclude number of calls
-		if (cnt <= exclude) {
-			cnt++
+		if !m {
 			continue
 		}
 
@@ -62,36 +51,46 @@ func ShortExclude(exclude int) string {
 		r, _ = regexp.Compile("\\s+\\(.*$")
 		l = r.ReplaceAllString(l, "")
 
+		//fmt.Println("\n\n" + l + "\n")
+		r, _ = regexp.Compile("\\.go:\\d+")
+		pacname := r.ReplaceAllString(l, "")
+
 		// when called from a function there will be a package name for the
 		// the function and the package
 
 		// TODO: this is the option to show the functions along with the packages.
-		// if show_funcs == 0 then skip packages calling their own functions.
+		// if show_funcs == true then skip packages calling their own functions.
 		// may make this into a global config option(do this but keep it out of
 		// this package). Or could also make it paramter. make generic function
-		// for modifying stack will multiple options. have ShortExclude() call 
+		// for modifying stack will multiple options. have ShortExclude() call
 		// ShortStack(exclude int, showfuncs bool)
 		show_funcs := false
-		if (show_funcs) {
+		if show_funcs {
 			// get the function name from the line below
 			r, _ = regexp.Compile("^\\W*")
 			func_name := r.ReplaceAllString(lines[i+1], "")
 			r, _ = regexp.Compile(":.*")
 			func_name = r.ReplaceAllString(func_name, "")
 
-			l += "." + func_name
+			l = pacname + "." + func_name
 		} else {
 
 			// if the package is the same as last time then we were called from a
 			// function within that package
-			if (current_pkg == l) {
+			if current_pkg == pacname {
 				continue
 			} else {
-				current_pkg = l
+				current_pkg = pacname
 			}
 		}
 
-		if (ret == "") {
+		// skip exclude number of packages
+		if cnt <= exclude {
+			cnt++
+			continue
+		}
+
+		if ret == "" {
 			ret = l
 		} else {
 			ret = l + "::" + ret
@@ -106,4 +105,17 @@ func ShortExclude(exclude int) string {
 //
 func Short() string {
 	return ShortExclude(1)
+}
+
+// LastFile
+//
+// gives the last .go file in the stack
+//
+func LastFile() string {
+	s := ShortExclude(1)
+
+	r, _ := regexp.Compile("\\..*$")
+	s = r.ReplaceAllString(s, "")
+
+	return s
 }
