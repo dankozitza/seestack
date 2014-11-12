@@ -1,7 +1,6 @@
 package seestack
 
 import (
-	//"fmt"
 	"regexp"
 	"runtime/debug"
 	"strings"
@@ -26,7 +25,7 @@ func ShortExclude(exclude int) string {
 	lines := strings.Split(string(debug.Stack()), "\n")
 
 	//for i, l := range(lines) {
-	//	fmt.Println(i, l)
+	//   fmt.Println(i, l)
 	//}
 
 	var ret string
@@ -51,9 +50,13 @@ func ShortExclude(exclude int) string {
 		r, _ = regexp.Compile("\\s+\\(.*$")
 		l = r.ReplaceAllString(l, "")
 
-		//fmt.Println("\n\n" + l + "\n")
+		// get the package name. ex: seestack
 		r, _ = regexp.Compile("\\.go:\\d+")
 		pacname := r.ReplaceAllString(l, "")
+
+		// get the line number. ex: 42
+		r, _ = regexp.Compile(".*\\.go:")
+		linenum := r.ReplaceAllString(l, "")
 
 		// when called from a function there will be a package name for the
 		// the function and the package
@@ -64,25 +67,25 @@ func ShortExclude(exclude int) string {
 		// this package). Or could also make it paramter. make generic function
 		// for modifying stack will multiple options. have ShortExclude() call
 		// ShortStack(exclude int, showfuncs bool)
-		show_funcs := false
-		if show_funcs {
-			// get the function name from the line below
-			r, _ = regexp.Compile("^\\W*")
-			func_name := r.ReplaceAllString(lines[i+1], "")
-			r, _ = regexp.Compile(":.*")
-			func_name = r.ReplaceAllString(func_name, "")
+		//show_funcs := false
+		//if show_funcs {
+		//   // get the function name from the line below
+		//   r, _ = regexp.Compile("^\\W*")
+		//   func_name := r.ReplaceAllString(lines[i+1], "")
+		//   r, _ = regexp.Compile(":.*")
+		//   func_name = r.ReplaceAllString(func_name, "")
 
-			l = pacname + "." + func_name
+		//   l = pacname + "." + func_name
+		//} else {
+
+		// if the package is the same as last time then we were called from a
+		// function within that package
+		if current_pkg == pacname {
+			continue
 		} else {
-
-			// if the package is the same as last time then we were called from a
-			// function within that package
-			if current_pkg == pacname {
-				continue
-			} else {
-				current_pkg = pacname
-			}
+			current_pkg = pacname
 		}
+		//}
 
 		// skip exclude number of packages
 		if cnt <= exclude {
@@ -91,9 +94,9 @@ func ShortExclude(exclude int) string {
 		}
 
 		if ret == "" {
-			ret = l
+			ret = pacname + ":" + linenum
 		} else {
-			ret = l + "::" + ret
+			ret = pacname + ":" + linenum + "::" + ret
 		}
 	}
 	return ret
@@ -114,7 +117,7 @@ func Short() string {
 func LastFile() string {
 	s := ShortExclude(1)
 
-	r, _ := regexp.Compile("\\..*$")
+	r, _ := regexp.Compile(":.*$")
 	s = r.ReplaceAllString(s, "")
 
 	return s
