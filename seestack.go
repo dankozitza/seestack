@@ -16,7 +16,7 @@ func Full() string {
 
 // ShortExclude
 //
-// Gives a short version of the call stack excluding the top n plackage names.
+// Gives a short version of the call stack excluding the top n package names.
 // ShortExclude(0) will give all package names excluding this package.
 //
 func ShortExclude(exclude int) string {
