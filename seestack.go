@@ -16,21 +16,15 @@ func Full() string {
 
 // ShortExclude
 //
-// Gives a short version of the call stack excluding the top n calls and
-// function calls. ShortExclude(0) will give all package names excluding
-// this package.
+// Gives a short version of the call stack excluding the top n plackage names.
+// ShortExclude(0) will give all package names excluding this package.
 //
 func ShortExclude(exclude int) string {
 
 	lines := strings.Split(string(debug.Stack()), "\n")
 
-	//for i, l := range(lines) {
-	//   fmt.Println(i, l)
-	//}
-
 	var ret string
 	var current_pkg string
-	//var func_stack string
 	cnt := 1
 	for i, l := range lines {
 		// exclude line 0 and odd lines
@@ -44,7 +38,7 @@ func ShortExclude(exclude int) string {
 		}
 
 		// remove extra stuff in line to get only the package name
-		// TODO: have options for line number/
+		// TODO: have options for line number
 		r, _ := regexp.Compile(".*/")
 		l = r.ReplaceAllString(l, "")
 		r, _ = regexp.Compile("\\s+\\(.*$")
