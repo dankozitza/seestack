@@ -59,8 +59,8 @@ func ShortExclude(exclude int) string {
 		// if show_funcs == true then skip packages calling their own functions.
 		// may make this into a global config option(do this but keep it out of
 		// this package). Or could also make it paramter. make generic function
-		// for modifying stack will multiple options. have ShortExclude() call
-		// ShortStack(exclude int, showfuncs bool)
+		// for modifying stack with multiple options.
+		//
 		//show_funcs := false
 		//if show_funcs {
 		//   // get the function name from the line below
