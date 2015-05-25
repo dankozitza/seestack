@@ -10,7 +10,7 @@ func recurse(depth int, t *testing.T) {
 	lf := LastFile()
 	fmt.Println(depth, tse, lf)
 
-	if tse != "testing:447::seestack_test:9::seestack:24" {
+	if tse != "testing:447::seestack_test:009::seestack:024" {
 		fmt.Println("TestAll.recurse(", depth, "): ShortExclude did not return "+
 			"expected value")
 		t.Fail()

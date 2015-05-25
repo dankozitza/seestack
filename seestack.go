@@ -6,6 +6,10 @@ import (
 	"strings"
 )
 
+var (
+	LineNumberMinimumDigits = 3
+)
+
 // Full
 //
 // gives the full call stack
@@ -64,6 +68,9 @@ func ShortExclude(exclude int) string {
 		// get the line number. ex: 42
 		r, _ = regexp.Compile(".*\\.go:")
 		linenum := r.ReplaceAllString(l, "")
+		for len(linenum) < LineNumberMinimumDigits {
+			linenum = "0" + linenum
+		}
 
 		// when called from a function there will be a package name for the
 		// the function and the package
@@ -71,7 +78,7 @@ func ShortExclude(exclude int) string {
 		// TODO: this is the option to show the functions along with the packages.
 		// if show_funcs == true then skip packages calling their own functions.
 		// may make this into a global config option(do this but keep it out of
-		// this package). Or could also make it paramter. make generic function
+		// this package). Or could also make it parameter. make generic function
 		// for modifying stack with multiple options.
 		//
 		//show_funcs := false
