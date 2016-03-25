@@ -37,9 +37,9 @@ func ShortExclude(exclude int) string {
 		//	continue
 		//}
 
-		// exclude lines that begin with spaces
+		// exclude lines that don't begin with spaces
 		m, _ := regexp.Match("^\\s+", []byte(l))
-		if m {
+		if !m {
 			continue
 		}
 
@@ -53,7 +53,7 @@ func ShortExclude(exclude int) string {
 		// TODO: have options for line number
 		r, _ := regexp.Compile(".*/")
 		l = r.ReplaceAllString(l, "")
-		r, _ = regexp.Compile("\\s+\\(.*$")
+		r, _ = regexp.Compile("\\s+.*$")
 		l = r.ReplaceAllString(l, "")
 
 		// get the package name. ex: seestack
