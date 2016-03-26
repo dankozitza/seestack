@@ -60,8 +60,8 @@ func ShortExclude(exclude int) string {
 		r, _ = regexp.Compile("\\.go:\\d+")
 		pacname := r.ReplaceAllString(l, "")
 
-		// exclude the package name 'proc'
-		if pacname == "proc" {
+		// exclude packages by name
+		if pacname == "proc" || pacname == "seestack" {
 			continue
 		}
 
